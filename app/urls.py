@@ -9,13 +9,13 @@ from drf_spectacular.views import (
 )
 from rest_framework.routers import DefaultRouter
 
-from core.views import UserViewSet
+from core.views import ResenhaViewSet, UserViewSet
 from uploader.router import router as uploader_router
 
 router = DefaultRouter()
 
 router.register(r'usuarios', UserViewSet, basename='usuarios')
-
+router.register(r'resenhas', ResenhaViewSet, basename='resenhas')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
