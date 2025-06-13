@@ -8,4 +8,4 @@ class Comentario(models.Model):
     resenha = models.ForeignKey(Resenha, on_delete=models.PROTECT, related_name="Comentario_resenha", null=True, blank=True)
 
     def __str__(self):
-        return f"{Resenha.titulo}"
+        return self.resenha.titulo
