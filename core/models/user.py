@@ -1,7 +1,3 @@
-"""
-Database models.
-"""
-
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -12,53 +8,57 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
-    """Manager for users."""
+    """Manager para os usuários."""
 
     use_in_migrations = True
 
     def create_user(self, email, password=None, **extra_fields):
-        """Create, save and return a new user."""
         if not email:
-            raise ValueError('Users must have an email address.')
-
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+            raise ValueError('Usuários devem ter um email válido.')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
         return user
 
-    def create_superuser(self, email, password):
-        """Create, save and return a new superuser."""
-        user = self.create_user(email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-        return user
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser precisa ter is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser precisa ter is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """User model in the system."""
+    """Modelo customizado de Usuário."""
 
-    passage_id = models.CharField(max_length=255, unique=True, verbose_name=_('passage_id'), help_text=_('Passage ID'))
-    email = models.EmailField(max_length=255, unique=True, verbose_name=_('email'), help_text=_('Email'))
-    name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('name'), help_text=_('Username'))
-    is_active = models.BooleanField(
-        default=True, verbose_name=_('Usuário está ativo'), help_text=_('Indica que este usuário está ativo.')
+    email = models.EmailField(max_length=255, unique=True, verbose_name=_('email'))
+    username = models.CharField(max_length=50, unique=True, verbose_name=_('nome de usuário'))
+    name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('nome completo'))
+
+
+    seguindo = models.ManyToManyField(
+        "self",
+        symmetrical=False,
+        related_name="seguidores",
+        blank=True
     )
-    is_staff = models.BooleanField(
-        default=False,
-        verbose_name=_('Usuário é da equipe'),
-        help_text=_('Indica que este usuário pode acessar o Admin.'),
-    )
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
-        """Meta options for the model."""
-
         verbose_name = 'Usuário'
         verbose_name_plural = 'Usuários'
+
+    def __str__(self):
+        return self.username or self.email
