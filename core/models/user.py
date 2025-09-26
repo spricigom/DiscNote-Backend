@@ -40,7 +40,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True, verbose_name=_('nome de usuário'))
     name = models.CharField(max_length=255, blank=True, null=True, verbose_name=_('nome completo'))
 
-
     seguindo = models.ManyToManyField(
         "self",
         symmetrical=False,
