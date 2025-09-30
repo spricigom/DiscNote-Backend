@@ -49,7 +49,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/auth/google/', GoogleLoginAPIView.as_view(), name='google-login'),
-
+    path("api/auth/", include('social_django.urls', namespace="social")),
 ]
 
 urlpatterns += static(settings.MEDIA_ENDPOINT, document_root=settings.MEDIA_ROOT)
