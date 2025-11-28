@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import (
 )
 
 router = DefaultRouter()
-
+# eita
 router.register(r'curtidas', CurtidaViewSet, basename='curtidas')
 router.register(r'comentarios', ComentarioViewSet, basename='comentarios')
 router.register(r'usuarios', UserViewSet, basename='usuarios')
